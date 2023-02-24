@@ -11,5 +11,5 @@ __version__ = "0.1"
 __author__ = "Sergey Bashirov"
 __email__ = "sergeybashirov@gmail.com"
 
-__license__ = "BSD 3-Clause License"
+__license__ = "BSD-3-clause"
 __copyright__ = "Copyright (c) 2023 {}".format(__author__)
