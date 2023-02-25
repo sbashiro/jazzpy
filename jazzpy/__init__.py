@@ -7,8 +7,11 @@
 # LICENSE file in the root directory of this source tree.
 
 
-from .__about__ import (
+from jazzpy.__about__ import (
     __version__,
+    __title__,
+    __summary__,
+    __uri__,
     __author__,
     __email__,
     __license__,
@@ -16,5 +19,11 @@ from .__about__ import (
 )
 
 
+from jazzpy.lib import (
+    Meeting,
+)
+
+
 __all__ = [
+    "Meeting",
 ]

@@ -8,7 +8,7 @@
 
 
 import sys
-from .cli import main
+from jazzpy.cli import main
 
 
 if __name__ == "__main__":

@@ -7,15 +7,28 @@
 # LICENSE file in the root directory of this source tree.
 
 
-import re as _re
 import sys as _sys
 import argparse as _argparse
-from .__about__ import __version__
+import jazzpy as _jazzpy
+
+
+def _print_message(message, file = None):
+    if file is None:
+        file = _sys.stdout
+    file.write("{}\n".format(message))
+
+
+def _print_error(message, file = None):
+    if file is None:
+        file = _sys.stderr
+    file.write("{}: error: {}\n".format(_jazzpy.__title__, message))
 
 
 def _parse_args():
-    parser = _argparse.ArgumentParser(prog = "jazzpy", description = "Command line interface for Jazz.")
-    parser.add_argument("--version", action = "version", version = "%(prog)s {}".format(__version__))
+    parser = _argparse.ArgumentParser(prog = _jazzpy.__title__,
+                                      description = "Command line interface for Jazz.")
+    parser.add_argument("--version", action = "version",
+                        version = "{} {}".format(_jazzpy.__title__, _jazzpy.__version__))
     subparsers = parser.add_subparsers(title = "supported commands", dest = "command", required = True)
 
     convert_parser = subparsers.add_parser("convert", description = "Convert https link to jazz link.")
@@ -27,18 +40,23 @@ def _parse_args():
     return parser.parse_args()
 
 
-def _convert_unimpl(args: _argparse.Namespace) -> int:
-    print(args.command)
-    return 0
+def _convert(args: _argparse.Namespace) -> int:
+    try:
+        meeting = _jazzpy.Meeting(args.https_link)
+        _print_message(meeting.jazz_link())
+        return 0
+    except ValueError:
+        _print_error("failed to convert link: {}".format(args.https_link))
+        return 1
 
 
 def _schedule_unimpl(args: _argparse.Namespace) -> int:
-    print(args.command)
+    _print_message(args.command)
     return 0
 
 
 def _fail(args: _argparse.Namespace) -> int:
-    print("jazzpy: error: unimplemented command: {}".format(args.command))
+    _print_error("unimplemented command: {}".format(args.command))
     return 1
 
 

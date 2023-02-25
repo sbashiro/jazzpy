@@ -9,6 +9,10 @@
 
 __version__ = "0.1"
 
+__title__ = "jazzpy"
+__summary__ = "CLI tool and library for Jazz app"
+__uri__ = "https://github.com/sbashiro/jazzpy"
+
 __author__ = "Sergey Bashirov"
 __email__ = "sergeybashirov@gmail.com"
 

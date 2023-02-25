@@ -6,6 +6,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+
 import sys
 import os.path
 
@@ -14,13 +15,14 @@ import __about__
 
 from setuptools import setup, find_packages
 
-setup(name = "jazzpy",
+
+setup(name = __about__.__title__,
       version = __about__.__version__,
-      description = "CLI tool and library for Jazz app",
+      description = __about__.__summary__,
+      url = __about__.__uri__,
       author = __about__.__author__,
       author_email = __about__.__email__,
       license = __about__.__license__,
-      url = "https://github.com/sbashiro/jazzpy",
       packages = find_packages(include = ["jazzpy"]),
       entry_points = {
           "console_scripts": ["jazzpy = jazzpy.cli:main"],
