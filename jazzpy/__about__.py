@@ -7,7 +7,7 @@
 # LICENSE file in the root directory of this source tree.
 
 
-__version__ = "0.1"
+__version__ = "0.2"
 
 __title__ = "jazzpy"
 __summary__ = "CLI tool and library for Jazz app"
