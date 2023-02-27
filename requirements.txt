@@ -1,0 +1,2 @@
+# -*- coding: UTF-8 -*-
+requests >= 2.27

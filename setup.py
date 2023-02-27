@@ -29,5 +29,6 @@ setup(name = __about__.__title__,
       },
       python_requires = ">=3.6",
       install_requires = [
+          "requests >= 2.27",
       ],
 )
