@@ -44,6 +44,9 @@ def _parse_args():
     schedule_parser = subparsers.add_parser("schedule", description = "Schedule a new meeting.")
     schedule_parser.add_argument("title", help = "meeting title")
 
+    show_parser = subparsers.add_parser("show", description = "Show last scheduled meeting.")
+    show_parser.add_argument("--all", action = "store_true", help = "list all history")
+
     return parser.parse_args()
 
 
@@ -56,27 +59,23 @@ def _load_history():
         except _toml.TomlDecodeError as e:
             _print_error("{}: {}".format(_HISTORY_FILE_NAME, str(e)))
 
-    if not isinstance(history.get("meeting"), list):
-        history.update({"meeting": []})
-
-    return history
+    return history.get("meeting", [])
 
 
 def _save_history(history):
     try:
         with open(_HISTORY_FILE_NAME, mode = "w") as file:
-            _toml.dump(history, file)
+            _toml.dump({"meeting": history}, file)
     except OSError as e:
         _print_error(str(e))
 
 
 def _add_to_history(meeting):
     history = _load_history()
-    meeting_list = history["meeting"]
-    meeting_list.insert(0, meeting.toml_dict())
+    history.insert(0, meeting.toml_dict())
 
-    if len(meeting_list) > _HISTORY_SIZE_MAX:
-        meeting_list.pop()
+    if len(history) > _HISTORY_SIZE_MAX:
+        history.pop()
 
     _save_history(history)
 
@@ -84,23 +83,40 @@ def _add_to_history(meeting):
 def _convert(args: _argparse.Namespace) -> int:
     try:
         meeting = _jazzpy.Meeting(args.https_link)
-        _print_message(meeting.jazz_link())
-        return 0
     except ValueError as e:
         _print_error(str(e))
-    return 1
+        return 1
+
+    _print_message(meeting.jazz_link())
+    return 0
 
 
 def _schedule(args: _argparse.Namespace) -> int:
     try:
         meeting = _jazzpy.Meeting.create(args.title)
-        _print_message("Web link: {}".format(meeting.https_link()))
-        _print_message("Jazz link: {}".format(meeting.jazz_link()))
-        _add_to_history(meeting)
-        return 0
     except (_requests.exceptions.ConnectionError, ConnectionError) as e:
         _print_error(str(e))
-    return 1
+        return 1
+
+    _print_message(meeting.format())
+    _add_to_history(meeting)
+    return 0
+
+
+def _show(args: _argparse.Namespace) -> int:
+    history = _load_history()
+
+    if not args.all:
+        history = history[0:1]
+
+    for params in history:
+        try:
+            _print_message(_jazzpy.Meeting(**params).format())
+        except ValueError as e:
+            _print_error(str(e))
+            return 1
+
+    return 0
 
 
 def _fail(args: _argparse.Namespace) -> int:

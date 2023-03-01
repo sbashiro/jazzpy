@@ -29,6 +29,9 @@ class Meeting:
     def __repr__(self):
         return repr(vars(self))
 
+    def format(self) -> str:
+        return "{}\n  Web link: {}\n  Jazz link: {}".format(self.title, self.https_link(), self.jazz_link())
+
     def https_link(self) -> str:
         HTTPS_LINK = "https://{}/{}?psw={}"
         return HTTPS_LINK.format(self.server, self.id, self.password)
