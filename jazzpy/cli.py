@@ -8,8 +8,15 @@
 
 
 import sys as _sys
+import os.path as _path
 import argparse as _argparse
+import requests as _requests
+import toml as _toml
 import jazzpy as _jazzpy
+
+
+_HISTORY_SIZE_MAX = 1024
+_HISTORY_FILE_NAME = _path.expanduser(_path.join("~", ".{}.toml".format(_jazzpy.__title__)))
 
 
 def _print_message(message, file = None):
@@ -40,19 +47,60 @@ def _parse_args():
     return parser.parse_args()
 
 
+def _load_history():
+    history = {}
+
+    if _path.exists(_HISTORY_FILE_NAME):
+        try:
+            history = _toml.load(_HISTORY_FILE_NAME)
+        except _toml.TomlDecodeError as e:
+            _print_error("{}: {}".format(_HISTORY_FILE_NAME, str(e)))
+
+    if not isinstance(history.get("meeting"), list):
+        history.update({"meeting": []})
+
+    return history
+
+
+def _save_history(history):
+    try:
+        with open(_HISTORY_FILE_NAME, mode = "w") as file:
+            _toml.dump(history, file)
+    except OSError as e:
+        _print_error(str(e))
+
+
+def _add_to_history(meeting):
+    history = _load_history()
+    meeting_list = history["meeting"]
+    meeting_list.insert(0, vars(meeting))
+
+    if len(meeting_list) > _HISTORY_SIZE_MAX:
+        meeting_list.pop()
+
+    _save_history(history)
+
+
 def _convert(args: _argparse.Namespace) -> int:
     try:
         meeting = _jazzpy.Meeting(args.https_link)
         _print_message(meeting.jazz_link())
         return 0
-    except ValueError:
-        _print_error("failed to convert link: {}".format(args.https_link))
-        return 1
+    except ValueError as e:
+        _print_error(str(e))
+    return 1
 
 
-def _schedule_unimpl(args: _argparse.Namespace) -> int:
-    _print_message(args.command)
-    return 0
+def _schedule(args: _argparse.Namespace) -> int:
+    try:
+        meeting = _jazzpy.Meeting.create(args.title)
+        _print_message("Web link: {}".format(meeting.https_link()))
+        _print_message("Jazz link: {}".format(meeting.jazz_link()))
+        _add_to_history(meeting)
+        return 0
+    except (_requests.exceptions.ConnectionError, ConnectionError) as e:
+        _print_error(str(e))
+    return 1
 
 
 def _fail(args: _argparse.Namespace) -> int:
