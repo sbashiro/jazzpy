@@ -8,14 +8,13 @@
 
 
 import re as _re
-import datetime as _datetime
 import requests as _requests
 
 
 class Meeting:
     """Class representing the data of a single Jazz meeting"""
 
-    def __init__(self, https_link: str, title: str = None, datetime: _datetime.datetime = None):
+    def __init__(self, https_link: str, title: str = None):
         JAZZ_URL_PATTERN = r"https://(\S+)/(\S+)\?psw=(\S+)"
         match = _re.search(JAZZ_URL_PATTERN, https_link, _re.U | _re.I)
         groups = match.groups() if match else None
@@ -26,7 +25,6 @@ class Meeting:
             raise ValueError("Failed to parse URL: {}".format(https_link))
 
         self.title = title
-        self.datetime = datetime
 
     def __repr__(self):
         return repr(vars(self))
@@ -59,4 +57,4 @@ class Meeting:
         if response.status_code != 200:
             raise ConnectionError("{} {}".format(response.status_code, response.reason))
 
-        return Meeting(response.json().get("url"), title, _datetime.datetime.now())
+        return Meeting(response.json().get("url"), title)
