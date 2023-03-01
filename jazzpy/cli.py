@@ -73,7 +73,7 @@ def _save_history(history):
 def _add_to_history(meeting):
     history = _load_history()
     meeting_list = history["meeting"]
-    meeting_list.insert(0, vars(meeting))
+    meeting_list.insert(0, meeting.toml_dict())
 
     if len(meeting_list) > _HISTORY_SIZE_MAX:
         meeting_list.pop()

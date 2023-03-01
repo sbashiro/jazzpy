@@ -37,6 +37,9 @@ class Meeting:
         JAZZ_LINK = "jazz://join?id={}&password={}"
         return JAZZ_LINK.format(self.id, self.password)
 
+    def toml_dict(self) -> dict:
+        return {"title": self.title, "https_link": self.https_link()}
+
     @staticmethod
     def create(title: str = None):
         if title is None:
