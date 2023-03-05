@@ -81,23 +81,13 @@ def _add_to_history(meeting):
 
 
 def _convert(args: _argparse.Namespace) -> int:
-    try:
-        meeting = _jazzpy.Meeting(args.https_link)
-    except ValueError as e:
-        _print_error(str(e))
-        return 1
-
+    meeting = _jazzpy.Meeting(args.https_link)
     _print_message(meeting.jazz_link())
     return 0
 
 
 def _schedule(args: _argparse.Namespace) -> int:
-    try:
-        meeting = _jazzpy.Meeting.create(args.title)
-    except (_requests.exceptions.ConnectionError, ConnectionError) as e:
-        _print_error(str(e))
-        return 1
-
+    meeting = _jazzpy.Meeting.create(args.title)
     _print_message(meeting.format())
     _add_to_history(meeting)
     return 0
@@ -110,11 +100,7 @@ def _show(args: _argparse.Namespace) -> int:
         history = history[0:1]
 
     for params in history:
-        try:
-            _print_message(_jazzpy.Meeting(**params).format())
-        except ValueError as e:
-            _print_error(str(e))
-            return 1
+        _print_message(_jazzpy.Meeting(**params).format())
 
     return 0
 
@@ -127,4 +113,9 @@ def _fail(args: _argparse.Namespace) -> int:
 def main() -> int:
     args = _parse_args()
     command = globals().get("_{}".format(args.command), _fail)
-    return command(args)
+
+    try:
+        return command(args)
+    except Exception as e:
+        _print_error(str(e))
+        return 1
