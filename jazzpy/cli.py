@@ -46,6 +46,8 @@ def _parse_args():
 
     show_parser = subparsers.add_parser("show", description = "Show last scheduled meeting.")
     show_parser.add_argument("--all", action = "store_true", help = "list all history")
+    show_parser.add_argument("number", help = "number of recent meetings to display",
+                             type = int, default = 1, nargs = "?")
 
     return parser.parse_args()
 
@@ -95,13 +97,9 @@ def _schedule(args: _argparse.Namespace) -> int:
 
 def _show(args: _argparse.Namespace) -> int:
     history = _load_history()
-
-    if not args.all:
-        history = history[0:1]
-
-    for params in history:
+    count = len(history) if args.all else max(args.number, 1)
+    for params in history[:count]:
         _print_message(_jazzpy.Meeting(**params).format())
-
     return 0
 
 
