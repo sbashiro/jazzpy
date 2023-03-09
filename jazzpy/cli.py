@@ -16,7 +16,7 @@ import jazzpy as _jazzpy
 
 
 _HISTORY_SIZE_MAX = 256
-_HISTORY_FILE_NAME = _path.expanduser(_path.join("~", ".{}.toml".format(_jazzpy.__title__)))
+_HISTORY_FILE_NAME = _path.expanduser(_path.join("~", ".{}_history.toml".format(_jazzpy.__title__)))
 
 
 def _print_message(message, file = None):
