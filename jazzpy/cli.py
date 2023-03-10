@@ -44,6 +44,10 @@ def _parse_args():
     schedule_parser = subparsers.add_parser("schedule", description = "Schedule a new meeting.")
     schedule_parser.add_argument("title", help = "meeting title")
 
+    add_parser = subparsers.add_parser("add", description = "Add meeting to history.")
+    add_parser.add_argument("title", help = "meeting title")
+    add_parser.add_argument("https_link", help = "meeting link from the Jazz app")
+
     show_parser = subparsers.add_parser("show", description = "Show last scheduled meeting.")
     show_parser.add_argument("--all", action = "store_true", help = "list all history")
     show_parser.add_argument("number", help = "number of recent meetings to display",
@@ -100,6 +104,13 @@ def _show(args: _argparse.Namespace) -> int:
     count = len(history) if args.all else max(args.number, 1)
     for params in history[:count]:
         _print_message(_jazzpy.Meeting(**params).format())
+    return 0
+
+
+def _add(args: _argparse.Namespace) -> int:
+    meeting = _jazzpy.Meeting(args.https_link, args.title)
+    _print_message(meeting.format())
+    _add_to_history(meeting)
     return 0
 
 
