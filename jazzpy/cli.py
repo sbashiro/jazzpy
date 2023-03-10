@@ -56,6 +56,15 @@ def _parse_args():
     return parser.parse_args()
 
 
+def _parse_title(title):
+    title = title.strip()
+
+    if not title:
+        raise ValueError("Meeting title must not be empty")
+
+    return title
+
+
 def _load_history():
     history = {}
 
@@ -93,7 +102,7 @@ def _convert(args: _argparse.Namespace) -> int:
 
 
 def _schedule(args: _argparse.Namespace) -> int:
-    meeting = _jazzpy.Meeting.create(args.title)
+    meeting = _jazzpy.Meeting.create(_parse_title(args.title))
     _print_message(meeting.format())
     _add_to_history(meeting)
     return 0
@@ -108,7 +117,7 @@ def _show(args: _argparse.Namespace) -> int:
 
 
 def _add(args: _argparse.Namespace) -> int:
-    meeting = _jazzpy.Meeting(args.https_link, args.title)
+    meeting = _jazzpy.Meeting(args.https_link, _parse_title(args.title))
     _print_message(meeting.format())
     _add_to_history(meeting)
     return 0
